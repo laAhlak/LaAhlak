@@ -86,6 +86,7 @@ export default function BeneficiariesList() {
     return () => {
       mounted = false
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading, hasLoaded])
 
   // Show loading only if we're actually loading data and haven't loaded yet

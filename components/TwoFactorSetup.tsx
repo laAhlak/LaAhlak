@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuthLazy } from '@/hooks/useAuthLazy'
 import {
   get2FASettings,
@@ -25,14 +25,7 @@ export default function TwoFactorSetup() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  useEffect(() => {
-    if (user) {
-      loadSettings()
-      checkBiometric()
-    }
-  }, [user])
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     if (!user) return
     
     try {
@@ -47,12 +40,19 @@ export default function TwoFactorSetup() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
-  const checkBiometric = async () => {
+  const checkBiometric = useCallback(async () => {
     const available = await isBiometricAvailable()
     setBiometricAvailable(available)
-  }
+  }, [])
+
+  useEffect(() => {
+    if (user) {
+      loadSettings()
+      checkBiometric()
+    }
+  }, [user, loadSettings, checkBiometric])
 
   const handleEnable2FA = async () => {
     if (!user) return
@@ -344,7 +344,7 @@ export default function TwoFactorSetup() {
               <span className="text-4xl">👆</span>
             </div>
             <p className="text-primary-500 mb-6">
-              اضغط على "تفعيل" لتسجيل بصمتك
+              اضغط على &quot;تفعيل&quot; لتسجيل بصمتك
             </p>
             
             <div className="flex gap-3">

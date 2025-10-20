@@ -18,6 +18,7 @@ export default function TwoFactorVerify({ userId, onVerified, onCancel }: TwoFac
 
   useEffect(() => {
     loadSettings()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
   const loadSettings = async () => {

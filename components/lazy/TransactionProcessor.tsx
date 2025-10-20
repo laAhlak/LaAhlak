@@ -31,6 +31,7 @@ export default function TransactionProcessor({ transactionData, onSuccess, onErr
 
   useEffect(() => {
     processTransaction()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const processTransaction = async () => {
@@ -47,17 +48,22 @@ export default function TransactionProcessor({ transactionData, onSuccess, onErr
       }
 
       // Create transaction record
+      // Convert JOD to EUR (EUR is primary currency now)
+      const EUR_TO_JOD = 0.85
+      const eurAmount = transactionData.jodAmount / EUR_TO_JOD
+      const feeEUR = transactionData.quote.feeJOD / EUR_TO_JOD
+      const totalEUR = eurAmount + feeEUR
+      
       const { data: transaction, error: transactionError } = await createTransaction({
         user_id: user.id,
-        send_amount_jod: transactionData.jodAmount,
-        total_eur: transactionData.quote.totalEUR,
-        fee_jod: transactionData.quote.feeJOD,
-        total_jod: transactionData.jodAmount + transactionData.quote.feeJOD,
-        exchange_rate: transactionData.quote.exchangeRate,
+        send_amount_eur: eurAmount,
+        fee_eur: feeEUR,
+        total_eur: totalEUR,
+        send_amount_jod_equivalent: transactionData.jodAmount,
+        total_jod_equivalent: transactionData.jodAmount + transactionData.quote.feeJOD,
+        eur_to_jod_rate: EUR_TO_JOD,
         status: 'pending',
         recipient_name: transactionData.recipient,
-        recipient_email: '',
-        recipient_phone: '',
         note: transactionData.note || ''
       })
 

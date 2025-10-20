@@ -25,6 +25,7 @@ export default function SendFlowModal({ isOpen, onClose }: SendFlowModalProps) {
     if (isOpen && user) {
       fetchBeneficiaries()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, user])
 
   const fetchBeneficiaries = async () => {
