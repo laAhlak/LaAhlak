@@ -1,0 +1,41 @@
+nohup: ignoring input
+
+> laahlak@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+   ▲ Next.js 15.5.5 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://10.255.255.254:3001
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ○ Compiling middleware ...
+ ✓ Compiled middleware in 2.7s
+ ✓ Ready in 48.8s
+ ○ Compiling /beneficiaries ...
+ ✓ Compiled /beneficiaries in 36.8s
+ GET /beneficiaries 200 in 40757ms
+ ○ Compiling /_not-found/page ...
+ GET /icons/icon-192x192.png 404 in 3002ms
+ ✓ Compiled /_not-found/page in 3.3s
+ GET /login 200 in 3654ms
+ GET /login 200 in 750ms
+ GET /icons/icon-144x144.png 404 in 486ms
+ ○ Compiling / ...
+ ✓ Compiled / in 5.4s
+ GET / 200 in 7290ms
+ GET / 200 in 5388ms
+ GET /login 200 in 519ms
+ GET /icons/icon-144x144.png 404 in 845ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 1458ms
+ GET /dashboard 200 in 2107ms
+ GET /icons/icon-144x144.png 404 in 958ms
+ ○ Compiling /send ...
+ ✓ Compiled /send in 1157ms
+ GET /send 200 in 1871ms
+ GET /icons/icon-144x144.png 404 in 912ms
+[?25h

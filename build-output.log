@@ -1,0 +1,4 @@
+
+> laahlak@0.1.0 build:clean
+> cp next.config.clean.js next.config.js && next build && cp next.config.backup.js next.config.js
+

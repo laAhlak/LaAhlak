@@ -1,0 +1,57 @@
+{
+  "name": "laahlak",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "dev:light": "cp next.config.light.js next.config.js && next dev --turbopack",
+    "dev:webpack": "next dev --webpack",
+    "build": "next build",
+    "build:minimal": "cp next.config.minimal.js next.config.js && next build && cp next.config.backup.js next.config.js",
+    "build:clean": "cp next.config.clean.js next.config.js && next build && cp next.config.backup.js next.config.js",
+    "build:fallback": "node scripts/build-with-fallback.js",
+    "config:backup": "cp next.config.js next.config.backup.js",
+    "config:minimal": "cp next.config.minimal.js next.config.js",
+    "config:clean": "cp next.config.clean.js next.config.js",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "analyze": "ANALYZE=true next build",
+    "type-check": "tsc --noEmit",
+    "test-splash": "node scripts/test-splash.js",
+    "generate-icons": "node scripts/generate-icons.js",
+    "seed-db": "node scripts/seed-database.js",
+    "seed-beneficiaries": "node scripts/seed-beneficiaries-only.js",
+    "create-user": "node scripts/create-test-user.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "dotenv": "^17.2.3",
+    "next": "15.5.5",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "stripe": "^14.25.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@next/bundle-analyzer": "15.5.5",
+    "@types/node": "^20",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "autoprefixer": "^10.0.1",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "clsx": "^2.0.0",
+    "eslint": "^8",
+    "eslint-config-next": "15.5.5",
+    "next-pwa": "^5.6.0",
+    "postcss": "^8",
+    "tailwind-merge": "^2.0.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5",
+    "web-vitals": "^4.2.4"
+  },
+  "overrides": {
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2"
+  }
+}

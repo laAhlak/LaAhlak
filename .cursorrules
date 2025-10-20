@@ -1,0 +1,43 @@
+# .cursorrules
+coding_style:
+  indentation: 2 spaces
+  quotes: single
+  semicolons: always
+  naming:
+    functions: camelCase
+    classes: PascalCase
+    constants: UPPER_SNAKE_CASE
+  imports:
+    - group: system
+    - group: libraries
+    - group: internal modules
+  error_handling:
+    - prefer try/catch over silent failures
+    - always log errors with context (userId, action, timestamp)
+  comments:
+    - use docstrings for exported functions
+    - avoid inline comments unless necessary
+  formatting: use Prettier + ESLint
+
+deployment:
+  environment: Supabase + Docker + Cloudflare
+  CI/CD: GitHub Actions
+  branch_policy: main = production, dev = staging
+
+ai_guidelines:
+  - always respect existing file architecture
+  - before major refactors, summarize changes in a bullet list
+  - explain non-trivial design decisions
+  - follow .cursorrules strictly unless user overrides
+  - never add dependencies without asking
+  - prefer simplicity and maintainability over cleverness
+  - output complete runnable code blocks
+
+code_review:
+  - check naming consistency
+  - check function complexity (max 20 lines if possible)
+  - check presence of docstrings
+  - check test coverage for new features
+  - check proper error handling
+
+
