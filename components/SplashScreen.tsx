@@ -3,17 +3,22 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 
-export default function SplashScreen() {
+interface SplashScreenProps {
+  onComplete?: () => void
+}
+
+export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
     // Hide splash screen after 2 seconds
     const timer = setTimeout(() => {
       setIsVisible(false)
+      onComplete?.()
     }, 2000)
 
     return () => clearTimeout(timer)
-  }, [])
+  }, [onComplete])
 
   if (!isVisible) return null
 

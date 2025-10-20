@@ -12,6 +12,7 @@ export default function SendForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [recentContacts, setRecentContacts] = useState<any[]>([])
   const [loadingContacts, setLoadingContacts] = useState(true)
+  const [user, setUser] = useState<any>(null)
   const searchParams = useSearchParams()
 
 
@@ -41,11 +42,14 @@ export default function SendForm() {
         
         // Get current authenticated user
         const supabase = getSupabaseClient()
-        const { data: { user }, error: authError } = await supabase.auth.getUser()
-        if (authError || !user) {
+        const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser()
+        if (authError || !currentUser) {
           console.error('User not authenticated')
           return
         }
+        
+        // Set user state
+        setUser(currentUser)
 
         // Get recent transactions to extract contacts
         const { data: transactions, error } = await supabase
@@ -56,7 +60,7 @@ export default function SendForm() {
             recipient_phone,
             created_at
           `)
-          .eq('user_id', user.id)
+          .eq('user_id', currentUser.id)
           .not('recipient_name', 'is', null)
           .order('created_at', { ascending: false })
           .limit(5)
