@@ -103,8 +103,8 @@ export default function TransactionProcessor({ transactionData, onSuccess, onErr
       case 'processing':
         return (
           <div className="text-center space-y-6">
-            <div className="w-20 h-20 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500"></div>
+            <div className="w-20 h-20 bg-accent-500/20 rounded-full flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 border-4 border-accent-500/30 border-t-accent-500 rounded-full animate-spin"></div>
             </div>
             <h2 className="text-xl font-semibold text-white">جاري معالجة المعاملة</h2>
             <p className="text-gray-400">يرجى الانتظار...</p>

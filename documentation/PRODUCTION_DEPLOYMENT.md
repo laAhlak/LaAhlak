@@ -191,6 +191,7 @@ git push -u origin main
 1. **Push to GitHub** (same as Vercel)
 
 2. **Go to Netlify:**
+
    - Visit: https://netlify.com
    - Click "Add new site" → "Import an existing project"
 

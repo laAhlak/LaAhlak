@@ -5,8 +5,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { getSupabaseClient } from '@/lib/supabaseLazy'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function LoginForm() {
+  const { t } = useLanguage()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -27,7 +29,7 @@ export default function LoginForm() {
       })
 
       if (error) {
-        setError('البريد الإلكتروني أو كلمة المرور غير صحيحة')
+        setError(t('login.error'))
         setIsLoading(false)
         return
       }
@@ -37,7 +39,7 @@ export default function LoginForm() {
         router.push('/dashboard')
       }
     } catch (err: any) {
-      setError('حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.')
+      setError(t('common.error'))
       console.error('Login error:', err)
       setIsLoading(false)
     }
@@ -48,7 +50,7 @@ export default function LoginForm() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <Link href="/" className="text-primary-500 text-xl font-bold">
-          ← العودة
+          ← {t('common.back')}
         </Link>
         <Image
           src="/logo.png"
@@ -63,15 +65,15 @@ export default function LoginForm() {
       <div className="flex-1 flex flex-col justify-center max-w-sm mx-auto w-full">
         <div className="space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-primary-500">مرحباً بعودتك</h1>
-            <p className="text-secondary-500">سجل الدخول إلى حسابك</p>
+            <h1 className="text-3xl font-bold text-primary-500">{t('login.welcomeBack')}</h1>
+            <p className="text-secondary-500">{t('login.subtitle')}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-primary-500 mb-2">
-                  البريد الإلكتروني
+                  {t('login.email')}
                 </label>
                 <input
                   id="email"
@@ -79,14 +81,14 @@ export default function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-3 bg-white border border-secondary-200 rounded-xl text-primary-500 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent shadow-lg"
-                  placeholder="أدخل بريدك الإلكتروني"
+                  placeholder={t('login.emailPlaceholder')}
                   required
                 />
               </div>
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-primary-500 mb-2">
-                  كلمة المرور
+                  {t('login.password')}
                 </label>
                 <input
                   id="password"
@@ -94,7 +96,7 @@ export default function LoginForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 bg-white border border-secondary-200 rounded-xl text-primary-500 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent shadow-lg"
-                  placeholder="أدخل كلمة المرور"
+                  placeholder={t('login.passwordPlaceholder')}
                   required
                 />
               </div>
@@ -113,10 +115,10 @@ export default function LoginForm() {
                   type="checkbox"
                   className="w-4 h-4 text-accent-500 bg-white border-secondary-200 rounded focus:ring-accent-500 focus:ring-2"
                 />
-                <span className="ml-2 text-sm text-secondary-500">تذكرني</span>
+                <span className="ml-2 text-sm text-secondary-500">{t('login.rememberMe')}</span>
               </label>
               <Link href="#" className="text-sm text-accent-500 hover:text-accent-600">
-                نسيت كلمة المرور؟
+                {t('login.forgotPassword')}
               </Link>
             </div>
 
@@ -125,15 +127,15 @@ export default function LoginForm() {
               disabled={isLoading}
               className="w-full bg-accent-500 hover:bg-accent-600 disabled:bg-accent-500/50 text-white font-semibold py-4 px-6 rounded-xl transition-colors duration-200 shadow-lg"
             >
-              {isLoading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
+              {isLoading ? t('login.loggingIn') : t('login.button')}
             </button>
           </form>
 
           <div className="text-center">
             <p className="text-secondary-500">
-              ليس لديك حساب؟{' '}
+              {t('login.noAccount')}{' '}
               <Link href="/signup" className="text-accent-500 hover:text-accent-600 font-medium">
-                إنشاء حساب جديد
+                {t('login.signupLink')}
               </Link>
             </p>
           </div>

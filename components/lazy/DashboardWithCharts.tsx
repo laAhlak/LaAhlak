@@ -2,16 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { getSupabaseClient } from '@/lib/supabaseLazy'
 import { getUserTransactions } from '@/lib/transactionsLazy'
 import { useAuthLazy } from '@/hooks/useAuthLazy'
-
-// Lazy load chart components
-const TransactionChart = dynamic(() => import('./TransactionChart'), {
-  loading: () => <div className="h-64 bg-dark-800 rounded-xl animate-pulse" />,
-  ssr: false
-})
+import { useLanguage } from '@/contexts/LanguageContext'
 
 // Lazy load send flow modal
 const SendFlowModal = dynamic(() => import('./SendFlowModal'), {
@@ -19,9 +15,11 @@ const SendFlowModal = dynamic(() => import('./SendFlowModal'), {
 })
 
 export default function DashboardWithCharts() {
+  const { t } = useLanguage()
   const [transactions, setTransactions] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
+  const [firstName, setFirstName] = useState<string>('')
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [stats, setStats] = useState({
     totalSent: 0,
@@ -49,6 +47,19 @@ export default function DashboardWithCharts() {
       }
 
       setUser(user)
+
+      // Get user profile to extract first name
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single()
+
+      if (!profileError && profile?.full_name) {
+        // Extract first name from full name
+        const name = profile.full_name.trim().split(' ')[0]
+        setFirstName(name)
+      }
 
       // Get user's transactions with beneficiary info
       const { data: transactionsData, error } = await supabase
@@ -122,12 +133,9 @@ export default function DashboardWithCharts() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-dark-900">
+      <main className="min-h-screen bg-white">
         <div className="flex items-center justify-center h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">جاري تحميل لوحة التحكم...</p>
-          </div>
+          <div className="w-16 h-16 border-4 border-secondary-200 border-t-accent-500 rounded-full animate-spin"></div>
         </div>
       </main>
     )
@@ -139,47 +147,40 @@ export default function DashboardWithCharts() {
       <div className="bg-primary-500 px-6 py-4 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-white text-xl font-bold">صباح الخير</h1>
-            <p className="text-secondary-300 text-sm">مرحباً بك في لِأهلك</p>
+            <h1 className="text-white text-xl font-bold">
+              {t('greeting.morning')} {firstName && firstName}
+            </h1>
+            <p className="text-secondary-300 text-sm">{t('greeting.welcome')}</p>
           </div>
+          <Link href="/settings" className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
+            <Image
+              src="/logo.png"
+              alt="Settings"
+              width={32}
+              height={32}
+              className="rounded-full"
+            />
+          </Link>
         </div>
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto pb-24">
+      <div className="flex-1 overflow-y-auto">
         {/* Stats Cards */}
         <div className="px-6 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-secondary-500 text-sm">إجمالي المرسل</p>
-                <p className="text-primary-500 text-2xl font-bold">{stats.totalSent.toFixed(2)} €</p>
-              </div>
-              <div className="w-12 h-12 bg-accent-500/20 rounded-xl flex items-center justify-center">
-                <span className="text-accent-500 text-xs font-bold">SEND</span>
-              </div>
+            <div>
+              <p className="text-secondary-500 text-sm">{t('stats.totalSent')}</p>
+              <p className="text-primary-500 text-2xl font-bold">{stats.totalSent.toFixed(2)} €</p>
             </div>
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-secondary-500 text-sm">عدد المعاملات</p>
-                <p className="text-primary-500 text-2xl font-bold">{stats.transactionCount}</p>
-              </div>
-              <div className="w-12 h-12 bg-success-500/20 rounded-xl flex items-center justify-center">
-                <span className="text-success-500 text-xs font-bold">STATS</span>
-              </div>
+            <div>
+              <p className="text-secondary-500 text-sm">{t('stats.transactionCount')}</p>
+              <p className="text-primary-500 text-2xl font-bold">{stats.transactionCount}</p>
             </div>
-          </div>
-        </div>
-
-        {/* Charts Section */}
-        <div className="mb-6">
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h3 className="text-primary-500 text-lg font-semibold mb-4">إحصائيات المعاملات</h3>
-            <TransactionChart transactions={transactions} />
           </div>
         </div>
 
@@ -189,22 +190,22 @@ export default function DashboardWithCharts() {
             onClick={() => setIsSendModalOpen(true)}
             className="bg-accent-500 hover:bg-accent-600 text-white font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-center shadow-lg"
           >
-            💸 إرسال أموال
+            {t('send.button')}
           </button>
           <Link
             href="/beneficiaries"
             className="bg-white hover:bg-secondary-100 text-primary-500 font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-center border border-secondary-200 shadow-lg"
           >
-            👥 المستفيدون
+            {t('beneficiaries.title')}
           </Link>
         </div>
 
         {/* Recent Transactions */}
         <div className="bg-white rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-primary-500 text-lg font-semibold">المعاملات الأخيرة</h3>
+            <h3 className="text-primary-500 text-lg font-semibold">{t('transactions.recent')}</h3>
             <Link href="/transactions" className="text-accent-500 text-sm hover:text-accent-400">
-              عرض الكل
+              {t('transactions.viewAll')}
             </Link>
           </div>
 
@@ -213,26 +214,21 @@ export default function DashboardWithCharts() {
               <div className="w-16 h-16 bg-secondary-200 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-secondary-500 text-xs font-bold">LIST</span>
               </div>
-              <p className="text-secondary-500">لا توجد معاملات بعد</p>
+              <p className="text-secondary-500">{t('transactions.none')}</p>
               <Link
                 href="/send"
                 className="inline-block mt-4 bg-accent-500 hover:bg-accent-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
               >
-                إرسال أول معاملة
+                {t('transactions.sendFirst')}
               </Link>
             </div>
           ) : (
             <div className="space-y-3">
               {transactions.map((transaction) => (
                 <div key={transaction.id} className="flex items-center justify-between py-3 border-b border-secondary-200 last:border-b-0">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-accent-500/20 rounded-full flex items-center justify-center">
-                      <span className="text-accent-500 text-xs font-bold">SEND</span>
-                    </div>
-                    <div>
-                      <p className="text-primary-500 font-medium">{transaction.name}</p>
-                      <p className="text-secondary-500 text-sm">{transaction.date}</p>
-                    </div>
+                  <div>
+                    <p className="text-primary-500 font-medium">{transaction.name}</p>
+                    <p className="text-secondary-500 text-sm">{transaction.date}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-primary-500 font-semibold">{transaction.amount.toFixed(2)} €</p>
@@ -243,36 +239,6 @@ export default function DashboardWithCharts() {
             </div>
           )}
         </div>
-        </div>
-      </div>
-
-      {/* Bottom Navigation - Fixed */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-secondary-200 px-6 py-3 shadow-lg z-50">
-        <div className="flex items-center justify-around">
-          <Link href="/dashboard" className="text-center space-y-1">
-            <div className="w-6 h-6 bg-accent-500 rounded flex items-center justify-center mx-auto">
-              <span className="text-white text-xs font-bold">HOME</span>
-            </div>
-            <p className="text-accent-500 text-xs">الرئيسية</p>
-          </Link>
-          <button onClick={() => setIsSendModalOpen(true)} className="text-center space-y-1">
-            <div className="w-6 h-6 rounded flex items-center justify-center mx-auto">
-              <span className="text-secondary-500 text-xs font-bold">SEND</span>
-            </div>
-            <p className="text-secondary-500 text-xs">إرسال</p>
-          </button>
-          <Link href="/beneficiaries" className="text-center space-y-1">
-            <div className="w-6 h-6 rounded flex items-center justify-center mx-auto">
-              <span className="text-secondary-500 text-xs font-bold">USERS</span>
-            </div>
-            <p className="text-secondary-500 text-xs">المستفيدون</p>
-          </Link>
-          <Link href="/settings" className="text-center space-y-1">
-            <div className="w-6 h-6 rounded flex items-center justify-center mx-auto">
-              <span className="text-secondary-500 text-xs font-bold">SETTINGS</span>
-            </div>
-            <p className="text-secondary-500 text-xs">الإعدادات</p>
-          </Link>
         </div>
       </div>
 

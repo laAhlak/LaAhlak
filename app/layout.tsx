@@ -4,6 +4,7 @@ import './globals.css'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 import PerformanceMonitor from '@/components/PerformanceMonitor'
 import SplashScreenWrapper from '@/components/SplashScreenWrapper'
+import { LanguageProvider } from '@/contexts/LanguageContext'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -96,7 +97,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="ar" dir="rtl">
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <link rel="icon" href="/icons/icon-192x192.png" />
@@ -117,13 +118,15 @@ export default function RootLayout({
         )}
       </head>
       <body className={`${inter.className} ${inter.variable} ${notoSansArabic.variable}`}>
-        <SplashScreenWrapper>
-          <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-500">
-            {children}
-            <PWAInstallPrompt />
-            <PerformanceMonitor />
-          </div>
-        </SplashScreenWrapper>
+        <LanguageProvider>
+          <SplashScreenWrapper>
+            <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-500">
+              {children}
+              <PWAInstallPrompt />
+              <PerformanceMonitor />
+            </div>
+          </SplashScreenWrapper>
+        </LanguageProvider>
       </body>
     </html>
   )

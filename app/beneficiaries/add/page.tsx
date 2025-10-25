@@ -167,7 +167,7 @@ export default function AddBeneficiaryPage() {
         <div className="px-6 py-20">
           <div className="text-center">
             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-green-500 text-3xl">✅</span>
+              <span className="text-green-500 text-xs font-bold">SUCCESS</span>
             </div>
             <h2 className="text-white text-xl font-semibold mb-4">تم إضافة المستفيد بنجاح!</h2>
             <p className="text-secondary-500 mb-8">يمكنك الآن إرسال الأموال إلى هذا المستفيد</p>
@@ -205,7 +205,7 @@ export default function AddBeneficiaryPage() {
       </div>
 
       {/* Form */}
-      <div className="px-6 py-6">
+      <div className="px-6 py-6 pb-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Error Message */}
           {error && (
@@ -321,36 +321,6 @@ export default function AddBeneficiaryPage() {
             {loading ? 'جاري الإضافة...' : 'إضافة المستفيد'}
           </button>
         </form>
-      </div>
-
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-secondary-200 px-6 py-3 shadow-lg">
-        <div className="flex items-center justify-around">
-          <Link href="/dashboard" className="text-center space-y-1">
-            <div className="w-6 h-6 rounded flex items-center justify-center mx-auto">
-              <span className="text-secondary-500 text-xs">🏠</span>
-            </div>
-            <p className="text-secondary-500 text-xs">الرئيسية</p>
-          </Link>
-          <Link href="/send" className="text-center space-y-1">
-            <div className="w-6 h-6 rounded flex items-center justify-center mx-auto">
-              <span className="text-secondary-500 text-xs">💸</span>
-            </div>
-            <p className="text-secondary-500 text-xs">إرسال</p>
-          </Link>
-          <Link href="/beneficiaries" className="text-center space-y-1">
-            <div className="w-6 h-6 bg-accent-500 rounded flex items-center justify-center mx-auto">
-              <span className="text-white text-xs">👥</span>
-            </div>
-            <p className="text-accent-500 text-xs">المستفيدون</p>
-          </Link>
-          <Link href="/settings" className="text-center space-y-1">
-            <div className="w-6 h-6 rounded flex items-center justify-center mx-auto">
-              <span className="text-secondary-500 text-xs">⚙️</span>
-            </div>
-            <p className="text-secondary-500 text-xs">الإعدادات</p>
-          </Link>
-        </div>
       </div>
     </main>
   )

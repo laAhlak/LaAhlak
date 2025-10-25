@@ -9,9 +9,10 @@ import Link from 'next/link'
 interface SendFlowModalProps {
   isOpen: boolean
   onClose: () => void
+  preSelectedBeneficiary?: any | null
 }
 
-export default function SendFlowModal({ isOpen, onClose }: SendFlowModalProps) {
+export default function SendFlowModal({ isOpen, onClose, preSelectedBeneficiary }: SendFlowModalProps) {
   const [step, setStep] = useState<'select' | 'amount'>('select')
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([])
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null)
@@ -20,13 +21,22 @@ export default function SendFlowModal({ isOpen, onClose }: SendFlowModalProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const { user } = useAuthLazy()
 
-  // Fetch beneficiaries when modal opens
+  // Handle pre-selected beneficiary
   useEffect(() => {
-    if (isOpen && user) {
+    if (preSelectedBeneficiary) {
+      setSelectedBeneficiary(preSelectedBeneficiary)
+      setStep('amount')
+      setLoading(false)
+    }
+  }, [preSelectedBeneficiary])
+
+  // Fetch beneficiaries when modal opens (only if no pre-selected)
+  useEffect(() => {
+    if (isOpen && user && !preSelectedBeneficiary) {
       fetchBeneficiaries()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, user])
+  }, [isOpen, user, preSelectedBeneficiary])
 
   const fetchBeneficiaries = async () => {
     if (!user) return
@@ -144,7 +154,7 @@ export default function SendFlowModal({ isOpen, onClose }: SendFlowModalProps) {
               ) : beneficiaries.length === 0 ? (
                 <div className="text-center py-20">
                   <div className="w-20 h-20 bg-secondary-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-secondary-500 text-3xl">👥</span>
+                    <span className="text-secondary-500 text-xs font-bold">LIST</span>
                   </div>
                   <h3 className="text-primary-500 text-lg font-semibold mb-2">
                     لا يوجد مستفيدون
@@ -173,12 +183,12 @@ export default function SendFlowModal({ isOpen, onClose }: SendFlowModalProps) {
                       </h3>
                       {beneficiary.email && (
                         <p className="text-secondary-500 text-sm mb-1">
-                          📧 {beneficiary.email}
+                          {beneficiary.email}
                         </p>
                       )}
                       {beneficiary.phone_number && (
                         <p className="text-secondary-500 text-sm">
-                          📱 {beneficiary.phone_number}
+                          {beneficiary.phone_number}
                         </p>
                       )}
                     </button>
@@ -231,24 +241,10 @@ export default function SendFlowModal({ isOpen, onClose }: SendFlowModalProps) {
 
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-secondary-500">المبلغ المرسل:</span>
-                      <span className="text-primary-500 font-semibold">
-                        €{parseFloat(amount).toFixed(2)}
+                      <span className="text-secondary-500">المجموع (يورو):</span>
+                      <span className="text-accent-500 font-bold text-lg">
+                        €{total.toFixed(2)}
                       </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-secondary-500">رسوم الخدمة (4%):</span>
-                      <span className="text-primary-500 font-semibold">
-                        €{fee.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="border-t border-secondary-200 pt-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-secondary-500">المجموع (يورو):</span>
-                        <span className="text-accent-500 font-bold text-lg">
-                          €{total.toFixed(2)}
-                        </span>
-                      </div>
                     </div>
                     <div className="bg-secondary-100 rounded-lg p-3 mt-3">
                       <div className="flex justify-between items-center">
@@ -271,7 +267,7 @@ export default function SendFlowModal({ isOpen, onClose }: SendFlowModalProps) {
                 disabled={isProcessing || !amount || parseFloat(amount) < 5 || parseFloat(amount) > 100}
                 className="w-full bg-accent-500 hover:bg-accent-600 disabled:bg-accent-500/50 text-white font-semibold py-4 px-6 rounded-xl transition-colors duration-200 shadow-lg"
               >
-                {isProcessing ? 'جاري المعالجة...' : 'إرسال الآن'}
+                {isProcessing ? 'جاري المعالجة...' : 'إرسال'}
               </button>
             </div>
           )}

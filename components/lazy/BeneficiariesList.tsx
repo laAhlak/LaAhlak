@@ -2,16 +2,23 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { getBeneficiaries } from '@/lib/beneficiariesLazy'
 import { Beneficiary } from '@/lib/supabaseLazy'
 import { useAuthLazy } from '@/hooks/useAuthLazy'
+
+const SendFlowModal = dynamic(() => import('./SendFlowModal'), {
+  ssr: false
+})
 
 export default function BeneficiariesList() {
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [hasLoaded, setHasLoaded] = useState(false)
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null)
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
 
   const { user, loading: authLoading } = useAuthLazy()
   const router = useRouter()
@@ -107,7 +114,7 @@ export default function BeneficiariesList() {
         {/* Loading State */}
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-500 mx-auto mb-4"></div>
+            <div className="w-16 h-16 border-4 border-secondary-200 border-t-accent-500 rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-secondary-500">جاري تحميل المستفيدين...</p>
           </div>
         </div>
@@ -164,7 +171,7 @@ export default function BeneficiariesList() {
               className="text-white hover:text-secondary-200 text-sm py-2 px-3 rounded-lg hover:bg-primary-600 transition-colors duration-200"
               title="تحديث القائمة"
             >
-              🔄
+              تحديث
             </button>
             <Link
               href="/beneficiaries/add"
@@ -177,13 +184,13 @@ export default function BeneficiariesList() {
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto pb-24">
+      <div className="flex-1 overflow-y-auto">
         {/* Beneficiaries List */}
         <div className="px-6 py-6">
         {beneficiaries.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-20 h-20 bg-secondary-200 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-secondary-500 text-3xl">👥</span>
+              <span className="text-secondary-500 text-xs font-bold">LIST</span>
             </div>
             <h2 className="text-primary-500 text-lg font-semibold mb-2">لا يوجد مستفيدون</h2>
             <p className="text-secondary-500 mb-6">أضف مستفيداً جديداً لبدء إرسال الأموال</p>
@@ -208,26 +215,29 @@ export default function BeneficiariesList() {
                     </h3>
                     {beneficiary.email && (
                       <p className="text-secondary-500 text-sm mb-1">
-                        📧 {beneficiary.email}
+                        {beneficiary.email}
                       </p>
                     )}
                     {beneficiary.phone_number && (
                       <p className="text-secondary-500 text-sm mb-2">
-                        📱 {beneficiary.phone_number}
+                        {beneficiary.phone_number}
                       </p>
                     )}
                     <div className="flex items-center space-x-4 text-xs text-secondary-500">
-                      <span>🌍 {beneficiary.country}</span>
-                      {beneficiary.iban && <span>🏦 {beneficiary.iban}</span>}
+                      <span>{beneficiary.country}</span>
+                      {beneficiary.iban && <span>{beneficiary.iban}</span>}
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Link
-                      href={`/send?recipient=${encodeURIComponent(beneficiary.name)}&email=${encodeURIComponent(beneficiary.email || '')}&phone=${encodeURIComponent(beneficiary.phone_number || '')}`}
+                    <button
+                      onClick={() => {
+                        setSelectedBeneficiary(beneficiary)
+                        setIsSendModalOpen(true)
+                      }}
                       className="bg-accent-500 hover:bg-accent-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-md"
                     >
                       إرسال
-                    </Link>
+                    </button>
                     <button className="bg-secondary-200 hover:bg-secondary-300 text-primary-500 text-sm py-2 px-3 rounded-lg transition-colors duration-200">
                       تعديل
                     </button>
@@ -240,35 +250,17 @@ export default function BeneficiariesList() {
         </div>
       </div>
 
-      {/* Bottom Navigation - Fixed */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-secondary-200 px-6 py-3 shadow-lg z-50">
-        <div className="flex items-center justify-around">
-          <Link href="/dashboard" className="text-center space-y-1">
-            <div className="w-6 h-6 rounded flex items-center justify-center mx-auto">
-              <span className="text-secondary-500 text-xs">🏠</span>
-            </div>
-            <p className="text-secondary-500 text-xs">الرئيسية</p>
-          </Link>
-          <Link href="/send" className="text-center space-y-1">
-            <div className="w-6 h-6 rounded flex items-center justify-center mx-auto">
-              <span className="text-secondary-500 text-xs">💸</span>
-            </div>
-            <p className="text-secondary-500 text-xs">إرسال</p>
-          </Link>
-          <Link href="/beneficiaries" className="text-center space-y-1">
-            <div className="w-6 h-6 bg-accent-500 rounded flex items-center justify-center mx-auto">
-              <span className="text-white text-xs">👥</span>
-            </div>
-            <p className="text-accent-500 text-xs">المستفيدون</p>
-          </Link>
-          <Link href="/settings" className="text-center space-y-1">
-            <div className="w-6 h-6 rounded flex items-center justify-center mx-auto">
-              <span className="text-secondary-500 text-xs">⚙️</span>
-            </div>
-            <p className="text-secondary-500 text-xs">الإعدادات</p>
-          </Link>
-        </div>
-      </div>
+      {/* Send Flow Modal */}
+      {isSendModalOpen && (
+        <SendFlowModal
+          isOpen={isSendModalOpen}
+          onClose={() => {
+            setIsSendModalOpen(false)
+            setSelectedBeneficiary(null)
+          }}
+          preSelectedBeneficiary={selectedBeneficiary}
+        />
+      )}
     </main>
   )
 }
